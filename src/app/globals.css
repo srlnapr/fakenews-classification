@@ -1,26 +1,51 @@
 @import "tailwindcss";
-
+/* ===== Custom Variables (sesuai tailwind.config.ts) ===== */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-inter: 'Inter', sans-serif;
+
+  /* Breakpoints sesuai screens Tailwind */
+  --screen-sm: 375px;
+  --screen-md: 768px;
+  --screen-lg: 1200px;
+
+  /* Container padding default */
+  --container-padding: 1rem;
+  --container-padding-md: 2rem;
+  --container-padding-lg: 4rem;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ===== Global Reset & Base Styles ===== */
+html {
+  font-family: var(--font-inter), sans-serif;
+  scroll-behavior: smooth;
+  background-color: rgb(0, 0, 0);  /* cocok untuk dark UI */
+  color: white;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/* ===== Container Utility (optional, jika tidak pakai tailwind `container` class) ===== */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--container-padding);
+  padding-right: var(--container-padding);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-left: var(--container-padding-md);
+    padding-right: var(--container-padding-md);
+  }
+}
+
+@media (min-width: 1200px) {
+  .container {
+    padding-left: var(--container-padding-lg);
+    padding-right: var(--container-padding-lg);
+  }
 }

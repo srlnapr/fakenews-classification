@@ -18,7 +18,7 @@
 html {
   font-family: var(--font-inter), sans-serif;
   scroll-behavior: smooth;
-  background-color: rgb(0, 0, 0);  /* cocok untuk dark UI */
+background: linear-gradient(to bottom, rgb(10, 10, 10), rgb(23, 23, 23)); /* dark UI gradient */
   color: white;
 }
 

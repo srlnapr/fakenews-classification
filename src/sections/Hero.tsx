@@ -43,9 +43,20 @@ export default function Hero() {
     ]);
   }, []);
 
+  const scrollToDeteksi = () => {
+    const deteksiSection = document.getElementById('deteksi');
+    if (deteksiSection) {
+      deteksiSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <section
-      className="py-24 overflow-x-clip"
+      id="hero"
+      className="mt-18 mb-8 md:mb-16  sl:mb-auto overflow-x-clip"
       style={{ cursor: `url(${cursorYouImage.src}), auto` }}
     >
       <div className="container relative">
@@ -88,13 +99,9 @@ export default function Hero() {
         </motion.div>
 
         {/* Content */}
-        <div className="flex justify-center">
-          <div className="inline-flex py-1 px-3 bg-gradient-to-r from-blue-400 to-red-400 rounded-full text-neutral-950 font-semibold">
-            Uji Kebenaran Berita dalam Sekejap
-          </div>
-        </div>
+      
 
-        <h1 className="text-6xl md:text-7xl font-medium text-center mt-6">
+        <h1 className="text-6xl md:text-7xl sl:text-6xl font-medium text-center mt-1">
           Beneran Nih?
         </h1>
 
@@ -104,6 +111,31 @@ export default function Hero() {
           Masukkan isi berita yang kamu ragu, dan biarkan sistem kami memverifikasi keasliannya dengan analisis cerdas berbasis AI.  
           Gratis, cepat, dan akurat.
         </p>
+
+        {/* CTA Button */}
+        <div className="flex justify-center mt-10">
+          <motion.button
+            onClick={scrollToDeteksi}
+            className="group relative inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 text-white font-semibold rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 active:scale-95"
+            whileHover={{ y: -2 }}
+            whileTap={{ y: 0 }}
+          >
+            <span>Cek Berita Sekarang</span>
+            <svg 
+              className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M13 7l5 5m0 0l-5 5m5-5H6" 
+              />
+            </svg>
+          </motion.button>
+        </div>
       </div>
     </section>
   );

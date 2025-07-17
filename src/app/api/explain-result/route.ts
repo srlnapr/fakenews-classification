@@ -1,31 +1,47 @@
-
 import { InferenceClient } from "@huggingface/inference";
-export async function POST(request) {
+
+interface ExplainRequestBody {
+  text: string;
+  isReal: boolean;
+  prompt: string;
+}
+
+interface ExplainResponse {
+  explanation?: string;
+  error?: string;
+  details?: string;
+}
+
+export async function POST(request: Request): Promise<Response> {
   try {
-    const { text, isReal, prompt } = await request.json();
+    const { text, isReal, prompt }: ExplainRequestBody = await request.json();
 
     if (!text || !prompt) {
       return Response.json({ error: 'Text and prompt are required' }, { status: 400 });
     }
 
-    const client = new InferenceClient(process.env.HF_TOKEN);
-    
-const fullPrompt = `
-Analisis mengapa berita berikut termasuk ${isReal ? 'FAKTA' : 'HOAKS'} berdasarkan karakteristik isi beritanya.
+    const client = new InferenceClient(process.env.HF_TOKEN as string);
 
-Teks berita:
+    const fullPrompt = `
+Analisis berita berikut dan jelaskan mengapa termasuk ${isReal ? 'FAKTA' : 'HOAKS'}:
+
 "${text}"
 
-Tuliskan:
-1. Alasan berita ini dikategorikan sebagai ${isReal ? 'FAKTA' : 'HOAKS'}
+Berikan penjelasan dengan struktur:
 
-3. Saran verifikasi lebih lanjut (jika perlu), seperti pengecekan sumber, bukti pendukung, atau konfirmasi pihak terkait.
+**Analisis:**
+Jelaskan mengapa berita ini ${isReal ? 'faktual' : 'hoaks'} berdasarkan karakteristik isinya.
 
-Gunakan bahasa Indonesia yang mudah dipahami, rapi, dan profesional. Gunakan bullet point agar penjelasan mudah dibaca.
+**Sumber Pendukung:**
+Sebutkan referensi kredibel yang mendukung analisis ini (situs pemeriksa fakta, media resmi, atau lembaga terpercaya).
+
+**Saran Verifikasi:**
+Berikan tips cara memverifikasi informasi serupa di masa depan.
+
+Jawab dalam bahasa Indonesia yang mudah dipahami dan profesional. Hindari penggunaan kata "pengguna" dan jangan gunakan format <think>. Berikan analisis yang langsung dan jelas.
 `;
 
-
-    const chatCompletion = await client.chatCompletion({
+    const chatCompletion: any = await client.chatCompletion({
       provider: "fireworks-ai",
       model: "deepseek-ai/DeepSeek-R1-0528",
       messages: [
@@ -40,14 +56,14 @@ Gunakan bahasa Indonesia yang mudah dipahami, rapi, dan profesional. Gunakan bul
 
     console.log("DeepSeek Response:", chatCompletion);
 
-    const explanation = chatCompletion.choices[0]?.message?.content || "Tidak dapat memberikan penjelasan saat ini.";
+    const explanation: string = chatCompletion.choices[0]?.message?.content || "Tidak dapat memberikan penjelasan saat ini.";
 
-    return Response.json({ explanation });
-  } catch (error) {
+    return Response.json({ explanation } as ExplainResponse);
+  } catch (error: any) {
     console.error("Error getting explanation:", error);
     return Response.json({ 
       error: 'Failed to get explanation',
       details: error.message 
-    }, { status: 500 });
+    } as ExplainResponse, { status: 500 });
   }
 }

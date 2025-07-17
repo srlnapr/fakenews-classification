@@ -14,7 +14,11 @@ import {
 export default function DetectionSection() {
   const [inputText, setInputText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState(null);
+  type DetectionResult = {
+    label: "REAL" | "FAKE";
+    confidence: number;
+  };
+  const [result, setResult] = useState<DetectionResult | null>(null);
   const [explanation, setExplanation] = useState("");
   const [error, setError] = useState("");
   
@@ -45,25 +49,38 @@ export default function DetectionSection() {
   };
 
   // Fungsi untuk mendapatkan penjelasan dari DeepSeek API
-  const getExplanation = async (text, isReal) => {
+  interface GetExplanationRequest {
+    text: string;
+    isReal: boolean;
+    prompt: string;
+  }
+
+  interface GetExplanationResponse {
+    explanation: string;
+  }
+
+  const getExplanation = async (
+    text: string,
+    isReal: boolean
+  ): Promise<string> => {
     try {
       const response = await fetch("/api/explain-result", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          text, 
+        body: JSON.stringify({
+          text,
           isReal,
           prompt: `Berikan penjelasan dalam bahasa Indonesia mengapa berita ini dikategorikan sebagai ${isReal ? 'FAKTA' : 'HOAKS'}. Jelaskan dengan detail dan berikan alasan yang masuk akal.`
-        }),
+        } as GetExplanationRequest),
       });
 
       if (!response.ok) {
         throw new Error("Gagal mendapatkan penjelasan");
       }
 
-      const data = await response.json();
+      const data: GetExplanationResponse = await response.json();
       return data.explanation;
     } catch (error) {
       console.error("Error getting explanation:", error);
@@ -72,7 +89,7 @@ export default function DetectionSection() {
   };
 
   // Handler untuk submit form
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
     if (!inputText.trim()) {
@@ -111,7 +128,7 @@ export default function DetectionSection() {
   };
 
   // Handler untuk copy text
-  const handleCopyExample = (text) => {
+  const handleCopyExample = (text: string) => {
     setInputText(text);
   };
 
@@ -122,7 +139,7 @@ export default function DetectionSection() {
   ];
 
   return (
-    <section className="py-24 bg-gradient-to-b from-neutral-900 to-neutral-950" ref={ref}>
+    <section id="deteksi" className="py-24 bg-gradient-to-b from-neutral-900 to-neutral-950" ref={ref}>
       <div className="container">
         {/* Header */}
         <motion.div
@@ -131,7 +148,7 @@ export default function DetectionSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex py-1 px-3 bg-gradient-to-r from-blue-400/20 to-red-400/20 rounded-full text-white/80 font-semibold mb-4">
+          <div className="inline-flex py-1 px-3 bg-gradient-to-r from-gray-500 via-gray-600 to-gray-800  rounded-full text-white/80 font-semibold mb-4">
             Mulai Deteksi
           </div>
           <h2 className="text-4xl md:text-5xl font-medium text-white mb-6">
@@ -192,7 +209,7 @@ export default function DetectionSection() {
                 <button
                   type="submit"
                   disabled={isLoading || inputText.length > 2000}
-                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:from-gray-500 disabled:to-gray-600 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 disabled:scale-100 flex items-center gap-3"
+                  className=" bg-gradient-to-r from-blue-500 to-red-500 hover:from-blue-600 hover:to-red-600 disabled:from-gray-500 disabled:to-gray-600 text-white px-8 py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 disabled:scale-100 flex items-center gap-3"
                 >
                   {isLoading ? (
                     <>
@@ -211,34 +228,36 @@ export default function DetectionSection() {
           </div>
         </motion.div>
 
-        {/* Example Texts */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="max-w-4xl mx-auto mt-8"
-        >
-          <p className="text-white/60 text-center mb-4">
-            Atau coba contoh berita ini:
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {exampleTexts.map((text, index) => (
-              <button
-                key={index}
-                onClick={() => handleCopyExample(text)}
-                className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 text-left transition-all duration-300 group"
-                disabled={isLoading}
-              >
-                <div className="flex items-start gap-3">
-                  <ClipboardDocumentIcon className="w-5 h-5 text-white/40 mt-0.5 group-hover:text-white/60" />
-                  <p className="text-white/70 text-sm leading-relaxed">
-                    {text.length > 80 ? `${text.substring(0, 80)}...` : text}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </motion.div>
+        {/* Example Texts - Hanya tampil jika belum ada hasil */}
+        {!result && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="max-w-4xl mx-auto mt-8"
+          >
+            <p className="text-white/60 text-center mb-4">
+              Atau coba contoh berita ini:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {exampleTexts.map((text, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleCopyExample(text)}
+                  className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 text-left transition-all duration-300 group"
+                  disabled={isLoading}
+                >
+                  <div className="flex items-start gap-3">
+                    <ClipboardDocumentIcon className="w-5 h-5 text-white/40 mt-0.5 group-hover:text-white/60" />
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      {text.length > 80 ? `${text.substring(0, 80)}...` : text}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Results */}
         {result && (
@@ -302,6 +321,37 @@ export default function DetectionSection() {
                   </p>
                 </div>
               )}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Example Texts - Tampil setelah hasil */}
+        {result && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="max-w-4xl mx-auto mt-8"
+          >
+            <p className="text-white/60 text-center mb-4">
+              Coba contoh berita lainnya:
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {exampleTexts.map((text, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleCopyExample(text)}
+                  className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg p-4 text-left transition-all duration-300 group"
+                  disabled={isLoading}
+                >
+                  <div className="flex items-start gap-3">
+                    <ClipboardDocumentIcon className="w-5 h-5 text-white/40 mt-0.5 group-hover:text-white/60" />
+                    <p className="text-white/70 text-sm leading-relaxed">
+                      {text.length > 80 ? `${text.substring(0, 80)}...` : text}
+                    </p>
+                  </div>
+                </button>
+              ))}
             </div>
           </motion.div>
         )}

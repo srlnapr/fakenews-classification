@@ -6,8 +6,7 @@ import {
   ChevronDownIcon,
   ExclamationTriangleIcon,
   QuestionMarkCircleIcon,
-  ShieldCheckIcon,
-  InformationCircleIcon
+   
 } from "@heroicons/react/24/outline";
 
 export default function PanduanSection() {

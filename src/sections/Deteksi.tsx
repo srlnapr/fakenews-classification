@@ -42,9 +42,9 @@ export default function DetectionSection() {
 
       const data = await response.json();
       return data;
-    } catch (error) {
-      console.error("Error detecting fake news:", error);
-      throw error;
+    } catch (err) {
+      console.error("Error detecting fake news:", err);
+      throw err;
     }
   };
 
@@ -121,7 +121,9 @@ export default function DetectionSection() {
       setExplanation(explanationText);
       
     } catch (error) {
-      setError("Terjadi kesalahan saat memproses. Silakan coba lagi.");
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  console.error("Error getting explanation:", error);
+  throw error;
     } finally {
       setIsLoading(false);
     }

@@ -146,7 +146,7 @@ export default function HowItWorks() {
           <span className="text-red-400 font-semibold">HOAKS</span>
         </div>
         <h4 className="text-white font-medium mb-2">
-          "Vaksin COVID-19 Mengandung Microchip"
+          &ldquo;Vaksin COVID-19 Mengandung Microchip&rdquo;
         </h4>
         <p className="text-white/60 text-sm">
           Informasi ini telah diverifikasi sebagai hoaks oleh berbagai lembaga kesehatan internasional.
@@ -159,7 +159,7 @@ export default function HowItWorks() {
           <span className="text-blue-400 font-semibold">FAKTA</span>
         </div>
         <h4 className="text-white font-medium mb-2">
-          "Indonesia Berhasil Turunkan Angka Kemiskinan"
+          &ldquo;Indonesia Berhasil Turunkan Angka Kemiskinan&rdquo;
         </h4>
         <p className="text-white/60 text-sm">
           Data resmi dari BPS menunjukkan penurunan tingkat kemiskinan di Indonesia pada tahun 2023.

@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-    title: "Benerannih>",
+    title: "Benerannih",
     description: "Made by serlin",
 };
 
